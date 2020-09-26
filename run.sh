@@ -1,4 +1,4 @@
 #!/bin/bash
 
 # My first script
-python project.py
+python3 project.py

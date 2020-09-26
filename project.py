@@ -8,19 +8,19 @@ def main():
 
 	devices = pcapy.findalldevs()
 	#give user choice of device
-	print "Which device would you like to sniff? :"
+	print("Which device would you like to sniff? :")
 	for i in range(len(devices)) :
 		print (str(i) + '. ' + devices[i])
 	
-	index = raw_input("Enter the device number : ")
+	index = input("Enter the device number : ")
 	device = devices[int(index)]
 	
 	#tell user which device was chosen
-	print "You are sniffing device " + device
+	print("You are sniffing device " + device)
 
 	#this value will be used to filter out between http and dns
-	selected = int(raw_input("Which header do you want to sniff? Enter the number (HTTP=1, DNS=2): "))
-	print "Sniffing..."
+	selected = int(input("Which header do you want to sniff? Enter the number (HTTP=1, DNS=2): "))
+	print("Sniffing...")
 
 	cap = pcapy.open_live(device , 65535 , 1 , 0)
 
@@ -91,11 +91,11 @@ def sniff_packet(packet, num, selected) :
 					
 					#get remaining values of packet
 					data = packet[h_size:]
-					headers_text = data.partition(b'\r\n\r\n')[0].decode('utf-8')
+					headers_text = data.partition(b'\r\n\r\n')[0].decode('utf-8', errors='ignore')
 
 					#filter out invalid data files
 					if "HTTP" in headers_text:
-						print str(num) + ' ' + str(s_addr) + ':' + str(source_port) + ' ' + str(d_addr) + ':' + str(dest_port) + ' HTTP REQUEST'
+						print(str(num) + ' ' + str(s_addr) + ':' + str(source_port) + ' ' + str(d_addr) + ':' + str(dest_port) + ' HTTP REQUEST')
 						num += 1
 						print(headers_text)
 						print('\n')
@@ -107,11 +107,11 @@ def sniff_packet(packet, num, selected) :
 					
 					#get remaining values of packet
 					data = packet[h_size:]
-					headers_text = data.partition(b'\r\n\r\n')[0].decode('utf-8')
+					headers_text = data.partition(b'\r\n\r\n')[0].decode('utf-8', errors='ignore')
 
 					#filter out invalid data files: 
 					if "HTTP" in headers_text: 
-						print str(num) + ' ' + str(s_addr) + ':' + str(source_port) + ' ' + str(d_addr) + ':' + str(dest_port) + ' HTTP RESPONSE'
+						print(str(num) + ' ' + str(s_addr) + ':' + str(source_port) + ' ' + str(d_addr) + ':' + str(dest_port) + ' HTTP RESPONSE')
 						num += 1
 						print(headers_text)
 						print('\n')
@@ -122,15 +122,15 @@ def sniff_packet(packet, num, selected) :
 					
 					#get remaining values of packet
 					data = packet[h_size:]
-					headers_text = data.partition(b'\r\n\r\n')[0].decode('utf-8')
+					headers_text = data.partition(b'\r\n\r\n')[0].decode('utf-8', errors='ignore')
 
 					#filter out invalid data files: 
-					print str(num) + ' ' + str(s_addr) + ':' + str(source_port) + ' ' + str(d_addr) + ':' + str(dest_port) + ' HTTP RESPONSE'
+					print(str(num) + ' ' + str(s_addr) + ':' + str(source_port) + ' ' + str(d_addr) + ':' + str(dest_port) + ' HTTP RESPONSE')
 					num += 1
 					print(headers_text)
 					print('\n')
 
-		if protocol == 17 :
+		if protocol == 17 and selected == 2:
 			u = iph_length + eth_length
 			udph_length = 8
 			udp_header = packet[u:u+8]
@@ -143,15 +143,15 @@ def sniff_packet(packet, num, selected) :
 			length = udph[2]
 			checksum = udph[3]
 			
-			print str(num) + ' ' + str(s_addr) + ':' + str(source_port) + ' ' + str(d_addr) + ':' + str(dest_port)
+			print(str(num) + ' ' + str(s_addr) + ':' + str(source_port) + ' ' + str(d_addr) + ':' + str(dest_port))
 			
 			h_size = eth_length + iph_length + udph_length
 			data_size = len(packet) - h_size
 			
 			#get data from the packet
 			data = packet[h_size:]
-			headers_text = data.partition('ID')[0].decode('utf-8')
-			print 'Data : ' + headers_text
+			#headers_text = data.partition('ID')[0].decode('utf-8')
+			#print('Data : ' + headers_text)
 
 	return num	
 
